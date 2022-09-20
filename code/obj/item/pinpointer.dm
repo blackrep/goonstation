@@ -76,6 +76,18 @@
 	proc/work_check()
 		return // override to interrupt work if conditions are met
 
+	proc/update_arrow(var/dist)
+		switch(dist)
+			if(0)
+				arrow.icon_state = "pinondirect"
+			if(1 to 8)
+				arrow.icon_state = "pinonclose"
+			if(9 to 16)
+				arrow.icon_state = "pinonmedium"
+			if(16 to INFINITY)
+				arrow.icon_state = "pinonfar"
+		UpdateOverlays(arrow, "arrow")
+
 	proc/work()
 		set waitfor = FALSE
 		if(hudarrow)
@@ -101,16 +113,7 @@
 				return
 			src.set_dir(get_dir(src,target))
 			var/dist = GET_DIST(src,target)
-			switch(dist)
-				if(0)
-					arrow.icon_state = "pinondirect"
-				if(1 to 8)
-					arrow.icon_state = "pinonclose"
-				if(9 to 16)
-					arrow.icon_state = "pinonmedium"
-				if(16 to INFINITY)
-					arrow.icon_state = "pinonfar"
-			UpdateOverlays(arrow, "arrow")
+			update_arrow(dist)
 
 			if(hudarrow && ismob(src.loc))
 				var/ang = get_angle(get_turf(src), get_turf(target))
