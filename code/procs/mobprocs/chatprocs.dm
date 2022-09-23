@@ -976,7 +976,7 @@
  * blind_message (optional) is what blind people will hear, e.g. "You hear something!"
  * Observers in range of either target will see the message, so the proc can be called on either target
  */
-/atom/proc/tri_message(atom/second_target, viewer_message, first_message, second_message, blind_message)
+/atom/proc/tri_message(atom/second_target, var/viewer_message, var/first_message, var/second_message, var/blind_message, var/ignore_src_target = FALSE, var/ignore_second_target = FALSE, var/group = "")
 	var/list/source_viewers = AIviewers(Center = src)
 	var/list/target_viewers = AIviewers(Center = second_target)
 	// get a list of all viewers within range of either target, discarding duplicates
@@ -987,11 +987,19 @@
 		if (!M.client)
 			continue
 		var/msg = viewer_message
-		if (first_message && M == src)
-			msg = first_message
-		if (second_message && M == second_target && M != src)
-			msg = second_message
-		M.show_message(msg, 1, blind_message, 2)
+		// src target
+		if (M == src)
+			if (ignore_src_target)
+				continue
+			if (first_message)
+				msg = first_message
+		// second target
+		if (M == second_target && M != src)
+			if (ignore_second_target)
+				continue
+			if (second_message)
+				msg = second_message
+		M.show_message(msg, 1, blind_message, 2, group)
 		//DEBUG_MESSAGE("<b>[M] recieves message: &quot;[msg]&quot;</b>")
 
 // it was about time we had this instead of just visible_message()
